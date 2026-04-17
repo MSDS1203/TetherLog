@@ -7,7 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dbPath = path.join(__dirname, "tetherlog.db");
-let db;
+let db = null;
+let dbInstance = null;
 
 // Generate unique IDs
 export function generateId() {
@@ -21,6 +22,14 @@ function saveDatabase() {
     const buffer = Buffer.from(data);
     fs.writeFileSync(dbPath, buffer);
   }
+}
+
+export async function getDb() {
+  if (!dbInstance) {
+    await initDatabase();
+    dbInstance = db;
+  }
+  return dbInstance;
 }
 
 // Initialize the database
@@ -41,7 +50,7 @@ export async function initDatabase() {
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
-      role TEXT DEFAULT 'reader',
+      role TEXT CHECK(role IN ('reader', 'admin')) DEFAULT 'reader',
       avatar_url TEXT,
       bio TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -108,4 +117,4 @@ export async function initDatabase() {
 
 }
 
-module.exports = db;
+export { saveDatabase };
