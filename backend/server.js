@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // saving book to db
-app.post('/api/books', async (req, res) => {
+app.post('/api/books', authMiddleware, async (req, res) => {
     const db = await getDb();
     const { title, author, cover_id } = req.body;
 

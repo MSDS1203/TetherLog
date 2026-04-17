@@ -16,6 +16,16 @@ Content-Type: application/json
   "password": "testpassword"
 }
 
+###
+POST {{baseUrl}}/api/register
+Content-Type: application/json
+
+{
+  "name": "Test User2",
+  "email": "testuser2@test.com",
+  "password": "testpassword2"
+}
+
 ### 
 POST {{baseUrl}}/api/login
 Content-Type: application/json
