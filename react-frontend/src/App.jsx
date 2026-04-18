@@ -1,14 +1,16 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Search from "./pages/search";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 
 function AppLayout({ children }) {
   return (
     <>
       <Navbar />
-      {children}
+      <Outlet />
     </>
   );
 }
@@ -18,15 +20,16 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route
-        path="/dashboard"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <Dashboard />
-            </AppLayout>
+            <AppLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
     </Routes>
   );
 }
