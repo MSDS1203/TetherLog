@@ -29,16 +29,8 @@ export default function Dashboard() {
   return (
     <div>
       <h1>Dashboard</h1>
-
-      {user && (
-        <p>
-          Logged in as {user.name || user.email || user.id} ({user.role})
-        </p>
-      )}
-
-      <button onClick={logout}>Logout</button>
-
-      <section class="friend-update">
+      
+      <section className="friend-update">
         <div class="container">
           <h4><b>Jane Doe</b></h4>
           <p>Currently reading...</p>

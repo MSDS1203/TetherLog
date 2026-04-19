@@ -1,9 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getToken, logout } from "../utils/auth";
+import { getMe } from "../utils/api";
 import './Navbar.css';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);  
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const token = getToken();
+        if (token) {
+            loadUser();
+        }
+    }, []);
+
+    async function loadUser() {
+        try {
+        const data = await getMe();
+        setUser(data);
+        } catch (err) {
+        console.error(err);
+        }
+    }
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -31,6 +50,18 @@ const Navbar = () => {
                         <Link to="/profile" className="nav-link" onClick={toggleMenu}>My Profile</Link>
                     </li>
                 </ul>
+                <div className="nav-user">
+                    {user && (
+                        <>
+                        <span className="user-info">
+                            {user.name || user.email} ({user.role})
+                        </span>
+                        <button onClick={logout} className="logout-btn">
+                            Logout
+                        </button>
+                        </>
+                    )}
+                    </div>
             </div>
         </nav>
     );

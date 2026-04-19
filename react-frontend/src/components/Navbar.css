@@ -28,6 +28,14 @@
   height: 80px;
 }
 
+.nav-user {
+  display: flex;
+  color: white;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
 .nav-link {
   color: #fff;
   display: flex;
