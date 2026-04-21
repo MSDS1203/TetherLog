@@ -37,3 +37,7 @@ export function getMe() {
 export function searchBooks(query) {
   return apiRequest(`/api/auth/search?q=${query}`);
 }
+
+export function getFeed() {
+  return apiRequest("/api/feed");
+}

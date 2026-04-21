@@ -6,6 +6,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [query, setQuery] = useState("");
   const [books, setBooks] = useState([]);
+  const [feed, setFeed] = useState([]);
 
   // redirect if not logged in
   useEffect(() => {
@@ -14,6 +15,7 @@ export default function Dashboard() {
       window.location.href = "/";
     } else {
       loadUser();
+      loadFeed();
     }
   }, []);
 
@@ -26,15 +28,44 @@ export default function Dashboard() {
     }
   }
 
+  // fetching feed 
+  async function loadFeed() {
+  try {
+    const res = await apiRequest("/api/feed", "GET");
+    setFeed(res);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
   return (
     <div>
       <h1>Dashboard</h1>
       
-      <section className="friend-update">
-        <div className="container">
-          <h4><b>Jane Doe</b></h4>
-          <p>Currently reading...</p>
-        </div>
+      <section className="friend-updates">
+        <h2>Friend Activity</h2>
+
+        {feed.length === 0 ? (
+          <p>Hmmm... looks like no updates yet.</p>
+        ) : (
+          feed.map((item) => (
+            <div key={item.id} className="container">
+              <h4>
+                <b>{item.user_name}</b>
+              </h4>
+
+              <p>
+                is reading <b>{item.book_title}</b>
+              </p>
+
+              <p>
+                Page: {item.page_reached}
+              </p>
+
+              {item.note && <p>“{item.note}”</p>}
+            </div>
+          ))
+        )}
       </section>
     </div>
   );

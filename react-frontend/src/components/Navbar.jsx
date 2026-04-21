@@ -54,7 +54,7 @@ const Navbar = () => {
                     {user && (
                         <>
                         <span className="user-info">
-                            {user.name || user.email} ({user.role})
+                            <p>Hello, {user.name || user.email}!</p>
                         </span>
                         <button onClick={logout} className="logout-btn">
                             Logout
