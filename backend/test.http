@@ -7,7 +7,7 @@ GET {{baseUrl}}/api/search?q=dracula
 GET {{baseUrl}}/api/protected
 
 ###
-POST {{baseUrl}}/api/register
+POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {

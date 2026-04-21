@@ -31,7 +31,7 @@ export default function Dashboard() {
       <h1>Dashboard</h1>
       
       <section className="friend-update">
-        <div class="container">
+        <div className="container">
           <h4><b>Jane Doe</b></h4>
           <p>Currently reading...</p>
         </div>

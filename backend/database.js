@@ -50,7 +50,7 @@ export async function initDatabase() {
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
-      role TEXT CHECK(role IN ('reader', 'admin')) DEFAULT 'reader',
+      role TEXT CHECK(role IN ('reader', 'author')) DEFAULT 'reader',
       avatar_url TEXT,
       bio TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
