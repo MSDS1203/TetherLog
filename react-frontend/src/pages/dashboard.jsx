@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
-import { getToken, logout } from "../utils/auth";
+import { getToken } from "../utils/auth";
 import { getMe, apiRequest } from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [query, setQuery] = useState("");
-  const [books, setBooks] = useState([]);
   const [feed, setFeed] = useState([]);
 
-  // redirect if not logged in
+  const navigate = useNavigate();
+
   useEffect(() => {
     const token = getToken();
     if (!token) {
       window.location.href = "/";
-    } else {
-      loadUser();
-      loadFeed();
+      return;
     }
+
+    loadUser();
+    loadFeed();
   }, []);
 
   async function loadUser() {
@@ -28,20 +29,19 @@ export default function Dashboard() {
     }
   }
 
-  // fetching feed 
   async function loadFeed() {
-  try {
-    const res = await apiRequest("/api/feed", "GET");
-    setFeed(res);
-  } catch (err) {
-    console.error(err);
+    try {
+      const res = await apiRequest("/api/feed"); 
+      setFeed(res);
+    } catch (err) {
+      console.error(err);
+    }
   }
-}
 
   return (
     <div>
       <h1>Dashboard</h1>
-      
+
       <section className="friend-updates">
         <h2>Friend Activity</h2>
 
@@ -50,7 +50,10 @@ export default function Dashboard() {
         ) : (
           feed.map((item) => (
             <div key={item.id} className="container">
-              <h4>
+              <h4
+                style={{ cursor: "pointer", color: "blue" }}
+                onClick={() => navigate(`/profile/${item.user_id}`)}
+              >
                 <b>{item.user_name}</b>
               </h4>
 
@@ -58,9 +61,7 @@ export default function Dashboard() {
                 is reading <b>{item.book_title}</b>
               </p>
 
-              <p>
-                Page: {item.page_reached}
-              </p>
+              <p>Page: {item.page_reached}</p>
 
               {item.note && <p>“{item.note}”</p>}
             </div>

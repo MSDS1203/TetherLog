@@ -6,7 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 
-function AppLayout({ children }) {
+function AppLayout() {
   return (
     <>
       <Navbar />
@@ -19,6 +19,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+
       <Route
         element={
           <ProtectedRoute>
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/search" element={<Search />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:id" element={<Profile />} />
       </Route>
     </Routes>
   );
