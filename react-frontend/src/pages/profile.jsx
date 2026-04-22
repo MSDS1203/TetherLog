@@ -8,11 +8,14 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
 
+  const [activity, setActivity] = useState([]);
+
   useEffect(() => {
     loadCurrentUser();
 
     if (id) {
       loadUser(id);
+      loadActivity(id);
     } else {
       loadMe();
     }
@@ -33,6 +36,11 @@ export default function Profile() {
     setUser(data);
   }
 
+  async function loadActivity(userId) {
+    const data = await apiRequest(`/api/users/${userId}/feed`);
+    setActivity(data);
+    }
+
   if (!user) return <p>Loading...</p>;
 
   const isMe = currentUser?.id === user.id;
@@ -52,6 +60,16 @@ export default function Profile() {
       ) : (
         <button>Follow</button>
       )}
+      
+      <h3>Activity</h3>
+
+        {activity.map(item => (
+            <div key={item.id}>
+                <p>Reading <b>{item.book_title}</b></p>
+                <p>Page: {item.page_reached}</p>
+                {item.note && <p>"{item.note}"</p>}
+            </div>
+        ))}
     </div>
   );
 }

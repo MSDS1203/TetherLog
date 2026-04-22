@@ -51,4 +51,37 @@ router.get("/:id", async (req, res) => {
   stmt.free();
 });
 
+router.get("/:id/feed", async(req, res) => {
+    const db = await getDb();
+
+    try{
+        const stmt = db.prepare(`
+            SELECT 
+                ru.id,
+                ru.page_reached,
+                ru.note,
+                ru.created_at,
+                b.title as book_title
+            FROM reading_updates ru
+            JOIN books b ON ru.book_id = b.id
+            WHERE ru.user_id = ?
+            ORDER BY ru.created_at DESC
+        `);
+
+        stmt.bind([req.params.id]);
+
+        const results = [];
+
+        while (stmt.step()){
+            results.push(stmt.getAsObject());
+        }
+
+        stmt.free();
+        res.json(results);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch user feed."});
+    }
+});
+
 export default router;
