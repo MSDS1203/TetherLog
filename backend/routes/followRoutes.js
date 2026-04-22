@@ -35,4 +35,39 @@ router.post("/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// unfollow user
+router.delete("/:id", authMiddleware, async (req, res) => {
+  const db = await getDb();
+
+  const followerId = req.user.id;
+  const followingId = req.params.id;
+
+  db.run(
+    `DELETE FROM follows 
+     WHERE follower_id = ? AND following_id = ?`,
+    [followerId, followingId]
+  );
+
+  saveDatabase();
+
+  res.json({ message: "Unfollowed user" });
+});
+
+// check for follows
+router.get("/:id/status", authMiddleware, async (req, res) => {
+  const db = await getDb();
+
+  const stmt = db.prepare(`
+    SELECT 1 FROM follows
+    WHERE follower_id = ? AND following_id = ?
+  `);
+
+  stmt.bind([req.user.id, req.params.id]);
+
+  const isFollowing = stmt.step();
+
+  stmt.free();
+
+  res.json({ isFollowing });
+});
 export default router;

@@ -7,39 +7,55 @@ export default function Profile() {
 
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-
+  const [isFollowing, setIsFollowing] = useState(false);
   const [activity, setActivity] = useState([]);
 
   useEffect(() => {
     loadCurrentUser();
-
-    if (id) {
-      loadUser(id);
-      loadActivity(id);
-    } else {
-      loadMe();
-    }
+    if(!id) return;
+    
+    loadUser(id);
+    loadActivity(id);
+    loadFollowStatus(id);
+     
   }, [id]);
 
   async function loadCurrentUser() {
     const me = await getMe();
     setCurrentUser(me);
   }
-
-  async function loadMe() {
-    const data = await getMe();
-    setUser(data);
-  }
-
   async function loadUser(userId) {
     const data = await apiRequest(`/api/users/${userId}`);
     setUser(data);
   }
 
+  async function loadFollowStatus(userId) {
+    const data = await apiRequest(`/api/follows/${userId}/status`);
+    setIsFollowing(data.isFollowing);
+  }
+
   async function loadActivity(userId) {
     const data = await apiRequest(`/api/users/${userId}/feed`);
     setActivity(data);
+  }
+
+  async function toggleFollow() {
+    try {
+        if (isFollowing) {
+        await apiRequest(`/api/follows/${id}`, {
+            method: "DELETE"
+        });
+        setIsFollowing(false);
+        } else {
+        await apiRequest(`/api/follows/${id}`, {
+            method: "POST"
+        });
+        setIsFollowing(true);
+        }
+    } catch (err) {
+        console.error(err);
     }
+  }
 
   if (!user) return <p>Loading...</p>;
 
@@ -58,7 +74,9 @@ export default function Profile() {
       {isMe ? (
         <button>Edit Profile</button>
       ) : (
-        <button>Follow</button>
+        <button onClick={toggleFollow}>
+            {isFollowing ? "Following" : "Follow"}
+        </button>
       )}
       
       <h3>Activity</h3>

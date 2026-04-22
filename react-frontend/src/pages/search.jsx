@@ -5,35 +5,63 @@ export default function Search(){
     const [books, setBooks] = useState([]);
     const [query, setQuery] = useState("");
     const [users, setUsers] = useState([]);
+    const [followingMap, setFollowingMap] = useState({});
 
   async function handleSearch() {
-      if (!query.trim()) return;
+    if (!query.trim()) return;
 
-      try {
-        // search books
-        const bookResults = await apiRequest(`/api/search?q=${query}`);
-        setBooks(bookResults);
+    try {
+      const bookResults = await apiRequest(`/api/search?q=${query}`);
+      setBooks(bookResults);
 
-        // search users
-        const userResults = await apiRequest(`/api/users/search?q=${query}`);
-        setUsers(userResults);
+      const userResults = await apiRequest(`/api/users/search?q=${query}`);
+      setUsers(userResults);
 
-      } catch (err) {
-        console.error(err);
-      }
+      // check follow status for each user
+      const statusChecks = await Promise.all(
+        userResults.map(async (u) => {
+          const res = await apiRequest(`/api/follows/${u.id}/status`);
+          return { id: u.id, isFollowing: res.isFollowing };
+        })
+      );
+
+      const map = {};
+      statusChecks.forEach(s => {
+        map[s.id] = s.isFollowing;
+      });
+
+      setFollowingMap(map);
+
+    } catch (err) {
+      console.error(err);
     }
+  }
 
-    async function followUser(userId) {
-      try {
+  async function toggleFollow(userId) {
+    try {
+      if (followingMap[userId]) {
+        await apiRequest(`/api/follows/${userId}`, {
+          method: "DELETE"
+        });
+
+        setFollowingMap(prev => ({
+          ...prev,
+          [userId]: false
+        }));
+      } else {
         await apiRequest(`/api/follows/${userId}`, {
           method: "POST"
         });
 
-        alert("Followed!");
-      } catch (err) {
-        alert("Failed to follow");
+        setFollowingMap(prev => ({
+          ...prev,
+          [userId]: true
+        }));
       }
+    } catch (err) {
+      console.error(err);
     }
+  }
 
 
     return (
@@ -54,8 +82,8 @@ export default function Search(){
             <strong>{user.name}</strong>
             <p>{user.email}</p>
 
-            <button onClick={() => followUser(user.id)}>
-              Follow
+            <button onClick={() => toggleFollow(user.id)}>
+              {followingMap[user.id] ? "Following" : "Follow"}
             </button>
 
             <hr />
