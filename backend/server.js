@@ -7,6 +7,8 @@ import bookRoutes from "./routes/bookRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
 import feedRoutes from "./routes/feedRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import followRoutes from "./routes/followRoutes.js";
 // import readingStatusRoutes from "./routes/readingStatusRoutes.js";
 
 dotenv.config();
@@ -21,6 +23,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/feed", feedRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/follows", followRoutes);
 // app.use("/api/reading-status", authMiddleware, readingStatusRoutes);
 
 // route test

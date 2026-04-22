@@ -1,53 +1,83 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../utils/api";
 
 export default function Search(){
     const [books, setBooks] = useState([]);
     const [query, setQuery] = useState("");
+    const [users, setUsers] = useState([]);
 
-    async function searchBooks() {
-        if (!query.trim()) {
-          alert("Enter a search term");
-          return;
-        }
-    
-        try {
-          const data = await apiRequest(`/api/search?q=${query}`);
-          setBooks(data);
-        } catch (err) {
-          console.error(err);
-          alert("Search failed");
-        }
+  async function handleSearch() {
+      if (!query.trim()) return;
+
+      try {
+        // search books
+        const bookResults = await apiRequest(`/api/search?q=${query}`);
+        setBooks(bookResults);
+
+        // search users
+        const userResults = await apiRequest(`/api/users/search?q=${query}`);
+        setUsers(userResults);
+
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    return(
-        <section>
-        <h2>Search Books</h2>
+    async function followUser(userId) {
+      try {
+        await apiRequest(`/api/follows/${userId}`, {
+          method: "POST"
+        });
+
+        alert("Followed!");
+      } catch (err) {
+        alert("Failed to follow");
+      }
+    }
+
+
+    return (
+      <section>
+        <h2>Search</h2>
 
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search books..."
+          placeholder="Search books or users..."
         />
 
-        <button onClick={searchBooks}>Search</button>
+        <button onClick={handleSearch}>Search</button>
 
-        <div>
-          {books.map((book, i) => (
-            <div key={i}>
-              <h3>{book.title}</h3>
-              <p>{book.author || "Unknown author"}</p>
+        <h3>Users</h3>
+        {users.map(user => (
+          <div key={user.id}>
+            <strong>{user.name}</strong>
+            <p>{user.email}</p>
 
-              {book.cover_id && (
-                <img
-                  src={`https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`}
-                  alt=""
-                />
-              )}
+            <button onClick={() => followUser(user.id)}>
+              Follow
+            </button>
 
-              <hr />
-            </div>
-          ))}
-        </div>
+            <hr />
+          </div>
+        ))}
+
+        <h3>Books</h3>
+        {books.map((book, i) => (
+          <div key={i}>
+            <h4>{book.title}</h4>
+            <p>{book.author || "Unknown author"}</p>
+
+            {book.cover_id && (
+              <img
+                src={`https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`}
+                alt=""
+              />
+            )}
+
+            <hr />
+          </div>
+        ))}
       </section>
-    )
+  );
 }
