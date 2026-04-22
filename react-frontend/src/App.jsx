@@ -5,6 +5,7 @@ import Search from "./pages/search";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
+import BookDetails from "./pages/bookDetails";
 
 function AppLayout() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/search" element={<Search />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/books/:id" element={<BookDetails />} />
       </Route>
     </Routes>
   );
