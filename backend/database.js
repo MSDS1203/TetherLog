@@ -68,6 +68,7 @@ export async function initDatabase() {
       genre TEXT,
       total_pages INTEGER,
       published_year INTEGER,
+      created_by TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);

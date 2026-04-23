@@ -82,4 +82,17 @@ router.get("/me", authMiddleware, async (req, res) => {
     }
 });
 
+
+router.post("/become-author", authMiddleware, async (req, res) => {
+  const db = await getDb();
+
+  db.run(
+    `UPDATE users SET role = 'author' WHERE id = ?`,
+    [req.user.id]
+  );
+
+  saveDatabase();
+  res.json({ message: "You are now an author" });
+});
+
 export default router;
