@@ -18,6 +18,7 @@ const Navbar = () => {
     async function loadUser() {
         try {
         const data = await getMe();
+        console.log("NAVBAR USER:", data);
         setUser(data);
         } catch (err) {
         console.error(err);
@@ -52,6 +53,11 @@ const Navbar = () => {
                             My Profile
                             </Link>
                         )}                    
+                    </li>
+                    <li className="nav-item">
+                        {user?.role === "author" && (
+                            <Link to="/my-books" className="nav-link">My Books</Link>
+                        )}
                     </li>
                 </ul>
                 <div className="nav-user">

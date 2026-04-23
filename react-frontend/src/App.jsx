@@ -8,6 +8,8 @@ import Navbar from "./components/Navbar";
 import BookDetails from "./pages/BookDetails";
 import Followers from "./pages/following";
 import MyBooks from "./pages/MyBooks";
+import CreateBook from "./components/CreateBook"; 
+import EditBook from "./pages/EditBook";
 
 function AppLayout() {
   return (
@@ -37,6 +39,9 @@ export default function App() {
         <Route path="/profile/:id/following" element={<Followers />} />
         <Route path="/books/:id" element={<BookDetails />} />
         <Route path="/my-books" element={<MyBooks />} />
+        <Route path="/books/new" element={<CreateBook />} />
+        <Route path="/books/:id" element={<BookDetails />} />
+        <Route path="/books/edit/:id" element={<EditBook />} /> 
       </Route>
     </Routes>
   );
