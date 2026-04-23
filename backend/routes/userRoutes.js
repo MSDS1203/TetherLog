@@ -225,4 +225,32 @@ router.get("/:id/stats", async (req, res) => {
   }
 });
 
+// update user profile
+router.put("/:id", authMiddleware, async (req, res) => {
+  const db = await getDb();
+  const { name, bio, avatar_url } = req.body;
+
+  if (req.user.id !== req.params.id) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  try {
+    db.run(
+      `
+      UPDATE users
+      SET name = ?, bio = ?, avatar_url = ?
+      WHERE id = ?
+      `,
+      [name, bio, avatar_url, req.params.id]
+    );
+
+    saveDatabase();
+
+    res.json({ message: "Profile updated" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+});
+
 export default router;

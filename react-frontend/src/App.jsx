@@ -10,6 +10,7 @@ import Followers from "./pages/following";
 import MyBooks from "./pages/MyBooks";
 import CreateBook from "./components/CreateBook"; 
 import EditBook from "./pages/EditBook";
+import ProfileEdit from "./pages/ProfileEdit"; 
 
 function AppLayout() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/search" element={<Search />} />
         <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/profile/:id/edit" element={<ProfileEdit />} />
         <Route path="/profile/:id/followers" element={<Followers />} />
         <Route path="/profile/:id/following" element={<Followers />} />
         <Route path="/books/:id" element={<BookDetails />} />

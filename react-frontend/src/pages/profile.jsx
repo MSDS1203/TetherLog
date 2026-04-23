@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { getMe, apiRequest } from "../utils/api";
 import { useParams, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -115,7 +117,9 @@ export default function Profile() {
 
       <div style={{ marginBottom: "20px" }}>
         {isMe ? (
-          <button>Edit Profile</button>
+          <button onClick={() => navigate(`/profile/${user.id}/edit`)}>
+            Edit Profile
+          </button>
         ) : (
           <button onClick={toggleFollow}>
             {isFollowing ? "Following" : "Follow"}
