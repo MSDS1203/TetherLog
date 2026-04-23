@@ -47,7 +47,11 @@ const Navbar = () => {
                         <Link to="/search" className="nav-link" onClick={toggleMenu}>Search</Link>
                     </li>
                     <li className="nav-item">  
-                        <Link to="/profile" className="nav-link" onClick={toggleMenu}>My Profile</Link>
+                        {user && (
+                            <Link to={`/profile/${user.id}`} className="nav-link" onClick={toggleMenu}>
+                            My Profile
+                            </Link>
+                        )}                    
                     </li>
                 </ul>
                 <div className="nav-user">

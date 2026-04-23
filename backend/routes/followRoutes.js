@@ -70,4 +70,51 @@ router.get("/:id/status", authMiddleware, async (req, res) => {
 
   res.json({ isFollowing });
 });
+
+// following list 
+router.get("/following/me", authMiddleware, async (req, res) => {
+  const db = await getDb();
+
+  const stmt = db.prepare(`
+    SELECT users.id, users.name, users.email
+    FROM follows
+    JOIN users ON users.id = follows.following_id
+    WHERE follows.follower_id = ?
+  `);
+
+  stmt.bind([req.user.id]);
+
+  const results = [];
+  while (stmt.step()) {
+    results.push(stmt.getAsObject());
+  }
+
+  stmt.free();
+
+  res.json(results);
+});
+
+// followers list 
+router.get("/followers/me", authMiddleware, async (req, res) => {
+  const db = await getDb();
+
+  const stmt = db.prepare(`
+    SELECT users.id, users.name, users.email
+    FROM follows
+    JOIN users ON users.id = follows.follower_id
+    WHERE follows.following_id = ?
+  `);
+
+  stmt.bind([req.user.id]);
+
+  const results = [];
+  while (stmt.step()) {
+    results.push(stmt.getAsObject());
+  }
+
+  stmt.free();
+
+  res.json(results);
+});
+
 export default router;
