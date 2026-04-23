@@ -1,0 +1,148 @@
+.followers-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.tab:hover {
+  color: #007bff;
+}
+
+.tab.active {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #007bff;
+}
+
+.tab-content {
+  min-height: 300px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-style: italic;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.user-card:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  transform: translateX(5px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info strong {
+  font-size: 16px;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.user-info p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .followers-container {
+    padding: 15px;
+  }
+
+  .tab {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .user-card {
+    padding: 12px;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .user-info strong {
+    font-size: 14px;
+  }
+
+  .user-info p {
+    font-size: 12px;
+  }
+}
