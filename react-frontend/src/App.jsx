@@ -12,6 +12,7 @@ import CreateBook from "./components/CreateBook";
 import EditBook from "./pages/EditBook";
 import ProfileEdit from "./pages/ProfileEdit"; 
 import UpdateProgress from "./pages/UpdateProgress";
+import "./App.css";
 
 
 function AppLayout() {

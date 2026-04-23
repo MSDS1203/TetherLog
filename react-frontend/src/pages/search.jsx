@@ -19,7 +19,6 @@ export default function Search() {
       setBooks(bookResults);
       setUsers(userResults);
 
-      // follow status check
       const statusChecks = await Promise.all(
         userResults.map(async (u) => {
           const res = await apiRequest(`/api/follows/${u.id}/status`);
@@ -62,91 +61,61 @@ export default function Search() {
       navigate(`/books/external/${encodeURIComponent(book.key)}`, {
         state: {
           title: book.title,
-          author:
-            book.author_name?.join(", ") ||
-            book.author ||
-            "Unknown author",
-          cover_url: book.cover_i
-            ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
-            : null
+          author: book.author_name?.join(", ") || book.author || "Unknown author",
+          cover_url: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null
         }
       });
     }
   }
 
   return (
-    <section>
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
       <h2>Search</h2>
 
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        placeholder="Search books or users..."
-      />
-
-      <button onClick={handleSearch}>Search</button>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder="Search books or users..."
+          style={{ flex: 1, padding: "8px", border: "1px solid #ddd", borderRadius: "4px" }}
+        />
+        <button onClick={handleSearch} style={{ padding: "8px 16px", cursor: "pointer" }}>Search</button>
+      </div>
 
       <h3>Users</h3>
       {users.map((user) => (
-        <div key={user.id}>
-          <strong>{user.name}</strong>
-          <p>{user.email}</p>
-
-          <button onClick={() => toggleFollow(user.id)}>
+        <div key={user.id} style={{ border: "1px solid #ddd", borderRadius: "6px", padding: "10px", marginBottom: "8px", display: "flex", justifyContent: "space-between" }}>
+          <div>
+            <strong>{user.name}</strong>
+            <p style={{ margin: "2px 0 0", fontSize: "14px", color: "#666" }}>{user.email}</p>
+          </div>
+          <button onClick={() => toggleFollow(user.id)} style={{ padding: "4px 12px", cursor: "pointer" }}>
             {followingMap[user.id] ? "Following" : "Follow"}
           </button>
-
-          <hr />
         </div>
       ))}
 
-      <h3>Books</h3>
+      <h3 style={{ marginTop: "24px" }}>Books</h3>
       {books.map((book, i) => {
         const coverId = book.cover_i || book.cover_id;
-
         return (
-          <div key={i}>
-            <h4>{book.title}</h4>
-
-            <p>
-              <strong>Author:</strong>{" "}
-              {book.author_name?.join(", ") ||
-                book.author ||
-                "Unknown author"}
-            </p>
-
-            {book.first_publish_year && (
-              <p>
-                <strong>Published:</strong> {book.first_publish_year}
+          <div key={i} style={{ display: "flex", gap: "15px", border: "1px solid #ddd", borderRadius: "6px", padding: "12px", marginBottom: "12px" }}>
+            <img 
+              src={coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : "https://via.placeholder.com/80x120?text=No+Cover"}
+              alt={book.title}
+              style={{ width: "60px", height: "90px", objectFit: "cover", borderRadius: "4px" }}
+            />
+            <div style={{ flex: 1 }}>
+              <strong>{book.title}</strong>
+              <p style={{ margin: "4px 0", fontSize: "14px", color: "#666" }}>
+                {book.author_name?.join(", ") || book.author || "Unknown author"}
               </p>
-            )}
-
-            {coverId ? (
-              <img
-                src={`https://covers.openlibrary.org/b/id/${coverId}-M.jpg`}
-                alt={book.title}
-                style={{ width: "120px", borderRadius: "4px" }}
-                onError={(e) => {
-                  e.currentTarget.src =
-                    "https://via.placeholder.com/120x180?text=No+Cover";
-                }}
-              />
-            ) : (
-              <img
-                src="https://via.placeholder.com/120x180?text=No+Cover"
-                alt="No cover"
-              />
-            )}
-
-            <button onClick={() => openBook(book)}>
-              View / Save Book
-            </button>
-
-            <hr />
+              <button onClick={() => openBook(book)} style={{ marginTop: "6px", padding: "4px 12px", cursor: "pointer" }}>View / Save</button>
+            </div>
           </div>
         );
       })}
-    </section>
+    </div>
   );
 }
