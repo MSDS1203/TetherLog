@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getMe, apiRequest } from "../utils/api";
 import { useParams, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import "./Profile.css"; 
+import "./Profile.css";
 
 export default function Profile() {
   const { id } = useParams();
@@ -214,22 +214,43 @@ export default function Profile() {
               <p className="empty-state">No books currently reading.</p>
             ) : (
               currentlyReading.map((book) => (
-                <Link to={`/books/${book.book_id}`} key={book.id} className="book-card">
-                  {book.cover_url ? (
-                    <img src={book.cover_url} alt={book.title} className="book-cover" />
-                  ) : (
-                    <div className="book-cover-placeholder">No cover</div>
-                  )}
-                  <div className="book-info">
-                    <div className="book-title">{book.title}</div>
-                    <p className="book-author">{book.author}</p>
-                    {book.current_page > 0 && (
-                      <p className="book-progress">
-                        Page {book.current_page} of {book.total_pages || "?"}
-                      </p>
+                <div key={book.id} className="book-card">
+                  <Link to={`/books/${book.book_id}`} style={{ display: "flex", gap: "15px", textDecoration: "none", color: "inherit", flex: 1 }}>
+                    {book.cover_url ? (
+                      <img src={book.cover_url} alt={book.title} className="book-cover" />
+                    ) : (
+                      <div className="book-cover-placeholder">No cover</div>
                     )}
-                  </div>
-                </Link>
+                    <div className="book-info">
+                      <div className="book-title">{book.title}</div>
+                      <p className="book-author">{book.author}</p>
+                      {book.current_page > 0 && (
+                        <p className="book-progress">
+                          Page {book.current_page} of {book.total_pages || "?"}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/update-progress/${book.book_id}`);
+                    }}
+                    style={{ 
+                      marginLeft: "auto", 
+                      padding: "5px 10px", 
+                      fontSize: "12px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      alignSelf: "center"
+                    }}
+                  >
+                    Update Progress
+                  </button>
+                </div>
               ))
             )}
           </div>
@@ -252,7 +273,7 @@ export default function Profile() {
                     <p className="book-author">{book.author}</p>
                     {book.rating && (
                       <p className="book-rating">
-                        Rating: {"⭐".repeat(book.rating)}
+                        Rating: {"*".repeat(book.rating)}
                       </p>
                     )}
                   </div>

@@ -11,6 +11,8 @@ import MyBooks from "./pages/MyBooks";
 import CreateBook from "./components/CreateBook"; 
 import EditBook from "./pages/EditBook";
 import ProfileEdit from "./pages/ProfileEdit"; 
+import UpdateProgress from "./pages/UpdateProgress";
+
 
 function AppLayout() {
   return (
@@ -45,6 +47,7 @@ export default function App() {
         <Route path="/books/:id" element={<BookDetails />} />
         <Route path="/books/edit/:id" element={<EditBook />} /> 
         <Route path="/books/external/:key" element={<BookDetails />} />
+        <Route path="/update-progress/:bookId" element={<UpdateProgress />} />
       </Route>
     </Routes>
   );

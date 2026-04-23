@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { apiRequest } from "../utils/api";
+import ReadingUpdates from "../components/ReadingUpdates";
 
 export default function BookDetails() {
   const { id, key } = useParams();

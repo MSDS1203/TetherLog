@@ -18,7 +18,7 @@ async function seed() {
     { id: "u1", name: "Alex", email: "alex@test.com" },
     { id: "u2", name: "Jane", email: "jane@test.com" },
     { id: "u3", name: "Sam", email: "sam@test.com" },
-    { id: "u4", name: "Ryan", email: "ryan@test.com" }  // Ryan added as author
+    { id: "u4", name: "Ryan", email: "ryan@test.com" }  
   ];
 
   for (const u of users) {
@@ -68,7 +68,7 @@ async function seed() {
     ]
   );
 
-  // Ryan's book (authored by Ryan)
+  // Ryan's book
   db.run(
     `
     INSERT INTO books (id, title, author, description, cover_url, genre, total_pages, published_year, created_by)
