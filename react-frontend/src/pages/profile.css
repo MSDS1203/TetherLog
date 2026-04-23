@@ -1,0 +1,257 @@
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profile-header {
+  margin-bottom: 20px;
+}
+
+.profile-name {
+  margin-bottom: 5px;
+  font-size: 28px;
+}
+
+.profile-bio {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-top: 10px;
+  object-fit: cover;
+}
+
+.stats-bar {
+  display: flex;
+  justify-content: space-around;
+  background: #f5f5f5;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.stat-item {
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+}
+
+.stat-number {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.stat-label {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.profile-actions {
+  margin-bottom: 20px;
+}
+
+.edit-button, .follow-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-button:hover, .follow-button:hover {
+  background-color: #0056b3;
+}
+
+.following-button {
+  background-color: #28a745;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #007bff;
+}
+
+.tab-active {
+  color: #007bff;
+  font-weight: bold;
+  border-bottom: 2px solid #007bff;
+}
+
+.tab-inactive {
+  color: #666;
+  font-weight: normal;
+  border-bottom: none;
+}
+
+.tab-count {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #999;
+}
+
+.tab-content {
+  min-height: 400px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.activity-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.activity-title {
+  font-weight: bold;
+}
+
+.activity-page {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.activity-note {
+  margin: 5px 0 0;
+  font-style: italic;
+  color: #888;
+}
+
+.books-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.book-card {
+  display: flex;
+  gap: 15px;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.book-card:hover {
+  background: #f5f5f5;
+}
+
+.book-cover {
+  width: 50px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.book-cover-placeholder {
+  width: 50px;
+  height: 75px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #666;
+  border-radius: 4px;
+}
+
+.book-info {
+  flex: 1;
+}
+
+.book-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.book-author {
+  margin: 5px 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.book-progress {
+  margin: 5px 0 0;
+  color: #007bff;
+  font-size: 12px;
+}
+
+.book-rating {
+  margin: 5px 0 0;
+  font-size: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-style: italic;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 15px;
+  }
+
+  .profile-name {
+    font-size: 24px;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .book-card {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .book-cover, .book-cover-placeholder {
+    width: 40px;
+    height: 60px;
+  }
+
+  .book-title {
+    font-size: 14px;
+  }
+
+  .book-author {
+    font-size: 12px;
+  }
+}

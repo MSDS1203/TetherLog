@@ -1,24 +1,33 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 
 export default function BookDetails() {
-  const { id } = useParams();
+  const { id, key } = useParams();
+
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { state } = useLocation();
+  const [readingStatus, setReadingStatus] = useState(null);
 
   useEffect(() => {
-    loadBook();
-  }, [id]);
+    async function init() {
+      if (id) {
+        await loadInternalBook();
+        await loadStatus(id);
+      } else if (key) {
+        await loadExternalBook();
+      }
+    }
 
-  async function loadBook() {
+    init();
+  }, [id, key]);
+
+  async function loadInternalBook() {
     try {
       setLoading(true);
-
       const data = await apiRequest(`/api/books/${id}`);
-    
-      console.log(data);
       setBook(data);
       setError(null);
     } catch (err) {
@@ -26,6 +35,107 @@ export default function BookDetails() {
       setError("Failed to load book.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadExternalBook() {
+    try {
+      setLoading(true);
+
+      const res = await fetch(
+        `https://openlibrary.org${decodeURIComponent(key)}.json`
+      );
+
+      const data = await res.json();
+
+      const formatted = {
+        id: null,
+        title: state?.title || data.title,
+        author: state?.author || "Unknown author",
+        description:
+          typeof data.description === "string"
+            ? data.description
+            : data.description?.value || "",
+        cover_url: state?.cover_url || null,
+        published_year: null
+      };
+
+      setBook(formatted);
+      setError(null);
+      
+      await loadStatusByExternalInfo(formatted);
+      
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load external book.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadStatusByExternalInfo(bookInfo) {
+    if (!bookInfo || !bookInfo.title) return;
+    
+    try {
+      const searchRes = await apiRequest(`/api/books/search?title=${encodeURIComponent(bookInfo.title)}&author=${encodeURIComponent(bookInfo.author || '')}`);
+      
+      if (searchRes && searchRes.id) {
+        const statusRes = await apiRequest(`/api/reading-status/${searchRes.id}`);
+        setReadingStatus(statusRes.status);
+        
+        setBook(prev => ({ ...prev, id: searchRes.id }));
+      }
+    } catch (err) {
+      console.error("Failed to find book in database:", err);
+    }
+  }
+
+  async function loadStatus(bookId) {
+    try {
+      const res = await apiRequest(`/api/reading-status/${bookId}`);
+      setReadingStatus(res.status);
+    } catch (err) {
+      console.error("Failed to load status:", err);
+      setReadingStatus(null);
+    }
+  }
+
+  async function addToList(status) {
+    try {
+      let bookId = book.id;
+
+      if (!bookId) {
+        const res = await apiRequest("/api/books", {
+          method: "POST",
+          body: JSON.stringify({
+            title: book.title,
+            author: book.author,
+            cover_id: null,
+            description: book.description,
+            published_year: book.published_year,
+            is_external: true
+          })
+        });
+
+        bookId = res.id;
+
+        setBook((prev) => ({ ...prev, id: bookId }));
+      }
+
+      await apiRequest("/api/reading-status", {
+        method: "POST",
+        body: JSON.stringify({
+          book_id: bookId,
+          status
+        })
+      });
+
+      const updated = await apiRequest(`/api/reading-status/${bookId}`);
+      setReadingStatus(updated.status);
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update reading status");
     }
   }
 
@@ -70,6 +180,49 @@ export default function BookDetails() {
           <strong>Published:</strong> {book.published_year}
         </p>
       )}
+
+      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+        {readingStatus === "reading" ? (
+          <>
+            <button onClick={() => addToList("completed")}>
+              Mark Completed
+            </button>
+            <button onClick={() => addToList("want_to_read")}>
+              Move to Want to Read
+            </button>
+          </>
+        ) : readingStatus === "want_to_read" ? (
+          <>
+            <button onClick={() => addToList("reading")}>
+              Start Reading
+            </button>
+            <button onClick={() => addToList("completed")}>
+              Mark as Completed
+            </button>
+          </>
+        ) : readingStatus === "completed" ? (
+          <>
+            <button onClick={() => addToList("reading")}>
+              Read Again
+            </button>
+            <button onClick={() => addToList("want_to_read")}>
+              Move to Want to Read
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => addToList("reading")}>
+              Start Reading
+            </button>
+            <button onClick={() => addToList("want_to_read")}>
+              Want to Read
+            </button>
+            <button onClick={() => addToList("completed")}>
+              Mark as Completed
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

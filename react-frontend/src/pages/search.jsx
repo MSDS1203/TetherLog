@@ -55,49 +55,22 @@ export default function Search() {
     }
   }
 
-  async function openBook(book) {
-    try {
-      let description = null;
-      let publishedYear = null;
-
-      if (book.key) {
-        try {
-          const res = await fetch(`https://openlibrary.org${book.key}.json`);
-          const data = await res.json();
-
-          if (data.description) {
-            description =
-              typeof data.description === "string"
-                ? data.description
-                : data.description.value || null;
-          }
-
-          if (data.first_publish_date) {
-            const match = data.first_publish_date.match(/\d{4}/);
-            if (match) publishedYear = parseInt(match[0]);
-          }
-        } catch (err) {
-          console.log("OpenLibrary fetch failed", err);
-        }
-      }
-
-      const author =
-        book.author_name?.join(", ") || book.author || "Unknown author";
-
-      const res = await apiRequest("/api/books", {
-        method: "POST",
-        body: JSON.stringify({
+  function openBook(book) {
+    if (book.id) {
+      navigate(`/books/${book.id}`);
+    } else {
+      navigate(`/books/external/${encodeURIComponent(book.key)}`, {
+        state: {
           title: book.title,
-          author,
-          cover_id: book.cover_i || book.cover_id,
-          description,
-          published_year: publishedYear,
-        }),
+          author:
+            book.author_name?.join(", ") ||
+            book.author ||
+            "Unknown author",
+          cover_url: book.cover_i
+            ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+            : null
+        }
       });
-
-      navigate(`/books/${res.id}`);
-    } catch (err) {
-      console.error(err);
     }
   }
 

@@ -12,20 +12,24 @@ async function seed() {
 
   // building demo users for testing 
   const hashedPassword = await bcrypt.hash("password123", 10);
+  const ryanHashedPassword = await bcrypt.hash("ryanpassword", 10);
 
   const users = [
     { id: "u1", name: "Alex", email: "alex@test.com" },
     { id: "u2", name: "Jane", email: "jane@test.com" },
-    { id: "u3", name: "Sam", email: "sam@test.com" }
+    { id: "u3", name: "Sam", email: "sam@test.com" },
+    { id: "u4", name: "Ryan", email: "ryan@test.com" }  // Ryan added as author
   ];
 
   for (const u of users) {
+    const password = u.email === "ryan@test.com" ? ryanHashedPassword : hashedPassword;
+    const role = u.email === "ryan@test.com" ? "author" : "reader";
     db.run(
       `
       INSERT OR IGNORE INTO users (id, name, email, password_hash, role)
       VALUES (?, ?, ?, ?, ?)
       `,
-      [u.id, u.name, u.email, hashedPassword, "reader"]
+      [u.id, u.name, u.email, password, role]
     );
   }
 
@@ -61,6 +65,25 @@ async function seed() {
       "Fantasy",
       300,
       1937
+    ]
+  );
+
+  // Ryan's book (authored by Ryan)
+  db.run(
+    `
+    INSERT INTO books (id, title, author, description, cover_url, genre, total_pages, published_year, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      "b3",
+      "Ryan's First Book",
+      "Ryan",
+      "An amazing story written by Ryan",
+      null,
+      "Fiction",
+      250,
+      2024,
+      "u4"
     ]
   );
 
@@ -115,6 +138,7 @@ async function seed() {
   saveDatabase();
 
   console.log("Seeding completed.");
+  console.log("Ryan (author): ryan@test.com / ryanpassword");
 }
 
 seed();

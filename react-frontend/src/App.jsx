@@ -44,6 +44,7 @@ export default function App() {
         <Route path="/books/new" element={<CreateBook />} />
         <Route path="/books/:id" element={<BookDetails />} />
         <Route path="/books/edit/:id" element={<EditBook />} /> 
+        <Route path="/books/external/:key" element={<BookDetails />} />
       </Route>
     </Routes>
   );
