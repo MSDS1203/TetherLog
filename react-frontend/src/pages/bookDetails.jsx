@@ -49,6 +49,9 @@ export default function BookDetails() {
 
       const data = await res.json();
 
+      const coverId = data.covers ? data.covers[0] : null;
+      const coverUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null;
+
       const formatted = {
         id: null,
         title: state?.title || data.title,
@@ -57,7 +60,7 @@ export default function BookDetails() {
           typeof data.description === "string"
             ? data.description
             : data.description?.value || "",
-        cover_url: state?.cover_url || null,
+        cover_url: state?.cover_url || coverUrl, 
         published_year: null
       };
 
@@ -106,20 +109,25 @@ export default function BookDetails() {
       let bookId = book.id;
 
       if (!bookId) {
-        const res = await apiRequest("/api/books", {
+        console.log("Saving book with cover_url:", book.cover_url);
+        const res = await apiRequest("/api/books/ensure-exists", {
           method: "POST",
           body: JSON.stringify({
             title: book.title,
             author: book.author,
             cover_id: null,
+            cover_url: book.cover_url,
             description: book.description,
             published_year: book.published_year,
             is_external: true
           })
         });
 
+        console.log("Saved book response:", res);
         bookId = res.id;
 
+        const savedBook = await apiRequest(`/api/books/debug/${bookId}`);
+        console.log("Saved book data:", savedBook); 
         setBook((prev) => ({ ...prev, id: bookId }));
       }
 
@@ -160,12 +168,12 @@ export default function BookDetails() {
           style={{ maxWidth: "200px", borderRadius: "6px" }}
           onError={(e) => {
             e.currentTarget.src =
-              "https://via.placeholder.com/200x300?text=No+Cover";
+              "https://placehold.co/200x300?text=No+Cover";
           }}
         />
       ) : (
         <img
-          src="https://via.placeholder.com/200x300?text=No+Cover"
+          src="https://placehold.co/200x300?text=No+Cover"
           alt="No cover"
         />
       )}

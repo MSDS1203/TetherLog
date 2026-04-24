@@ -31,7 +31,7 @@ Authorization: Bearer
 
 ### Create Book
 POST {{baseUrl}}/api/books
-Authorization: Bearer
+Authorization: Bearer 
 Content-Type: application/json
 
 {

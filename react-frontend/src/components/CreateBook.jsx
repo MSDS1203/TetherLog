@@ -20,7 +20,7 @@ export default function CreateBook() {
     });
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -36,14 +36,20 @@ export default function CreateBook() {
         }),
       });
       
-      navigate(`/books/${res.id}`);
+      console.log("Server response:", res); // Add this line
+      
+      if (res && res.id) {
+        navigate(`/books/${res.id}`);
+      } else {
+        setError("Book created but no ID returned");
+      }
     } catch (err) {
+      console.error(err);
       setError(err.message || "Failed to create book");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
       <h2>Create New Book</h2>

@@ -201,4 +201,71 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   res.json({ message: "Book deleted" });
 });
 
+router.post("/ensure-exists", authMiddleware, async (req, res) => {
+  const db = await getDb();
+  const { title, author, cover_url, description, published_year } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: "Missing title" });
+  }
+
+  try {
+    const stmt = db.prepare(`
+      SELECT id FROM books WHERE title = ? AND author = ?
+    `);
+    stmt.bind([title, author || "Unknown author"]);
+    
+    if (stmt.step()) {
+      const existing = stmt.getAsObject();
+      stmt.free();
+      
+      if (cover_url) {
+        const updateStmt = db.prepare(`UPDATE books SET cover_url = ? WHERE id = ?`);
+        updateStmt.bind([cover_url, existing.id]);
+        updateStmt.step();
+        updateStmt.free();
+        saveDatabase();
+      }
+      
+      return res.json({ id: existing.id });
+    }
+    stmt.free();
+
+    const id = generateId();
+    
+    db.run(`
+      INSERT INTO books (id, title, author, cover_url, description, published_year)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `, [
+      id, 
+      title, 
+      author || "Unknown author",
+      cover_url || null,
+      description || null,
+      published_year || null
+    ]);
+
+    saveDatabase();
+    res.json({ id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/debug/:id", async (req, res) => {
+  const db = await getDb();
+  const stmt = db.prepare(`SELECT id, title, cover_url FROM books WHERE id = ?`);
+  stmt.bind([req.params.id]);
+  
+  if (stmt.step()) {
+    const book = stmt.getAsObject();
+    stmt.free();
+    res.json(book);
+  } else {
+    stmt.free();
+    res.json({ error: "Not found" });
+  }
+});
+
 export default router;

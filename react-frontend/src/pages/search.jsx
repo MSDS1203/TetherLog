@@ -102,7 +102,7 @@ export default function Search() {
         return (
           <div key={i} style={{ display: "flex", gap: "15px", border: "1px solid #ddd", borderRadius: "6px", padding: "12px", marginBottom: "12px" }}>
             <img 
-              src={coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : "https://via.placeholder.com/80x120?text=No+Cover"}
+              src={coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : "https://placehold.co/80x120?text=No+Cover"}
               alt={book.title}
               style={{ width: "60px", height: "90px", objectFit: "cover", borderRadius: "4px" }}
             />

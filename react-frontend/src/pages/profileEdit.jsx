@@ -59,7 +59,7 @@ export default function EditProfile(){
 
   async function becomeAuthor() {
     try {
-      await apiRequest(`/api/users/${user.id}/become-author`, {
+      await apiRequest(`/api/auth/become-author`, {
         method: "POST"
       });
 
