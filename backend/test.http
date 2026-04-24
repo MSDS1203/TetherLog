@@ -1,5 +1,4 @@
 @baseUrl = http://localhost:5000
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1vYXY0aHFpMmcwbyIsInJvbGUiOiJyZWFkZXIiLCJlbWFpbCI6InJ5YW5AdGVzdC5jb20iLCJuYW1lIjoicnlhbiIsImlhdCI6MTc3NjkxMTk5NCwiZXhwIjoxNzc3NTE2Nzk0fQ.IyyjPGbKJKzs1kdTd9V1EW_uYAlVQKpkXRPq7tDl0Pc
 
 ###
 GET {{baseUrl}}/api/search?q=dracula
@@ -28,11 +27,11 @@ Content-Type: application/json
 
 ### Become Author
 POST {{baseUrl}}/api/auth/become-author
-Authorization: Bearer {{token}}
+Authorization: Bearer 
 
 ### Create Book
 POST {{baseUrl}}/api/books
-Authorization: Bearer {{token}}
+Authorization: Bearer
 Content-Type: application/json
 
 {
