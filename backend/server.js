@@ -10,8 +10,14 @@ import feedRoutes from "./routes/feedRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import followRoutes from "./routes/followRoutes.js";
 import readingStatusRoutes from "./routes/readingStatusRoutes.js";
+import shelfRoutes from "./routes/shelfRoutes.js";
+import goalRoutes from "./routes/goalRoutes.js";
 
 dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+    throw new Error("Missing JWT_SECRET. Add it to backend/.env before starting the server.");
+}
 
 const app = express();
 
@@ -26,6 +32,8 @@ app.use("/api/feed", feedRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/follows", followRoutes);
 app.use("/api/reading-status", readingStatusRoutes);
+app.use("/api/shelves", shelfRoutes);
+app.use("/api/goals", goalRoutes);
 
 // route test
 app.get("/", (req, res) => {

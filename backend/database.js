@@ -116,6 +116,46 @@ export async function initDatabase() {
     )
     `);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS shelves (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      description TEXT,
+      is_default INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(user_id, name)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS shelf_books (
+      id TEXT PRIMARY KEY,
+      shelf_id TEXT NOT NULL,
+      book_id TEXT NOT NULL,
+      added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (shelf_id) REFERENCES shelves(id) ON DELETE CASCADE,
+      FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+      UNIQUE(shelf_id, book_id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS reading_goals (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      period_type TEXT NOT NULL CHECK(period_type IN ('yearly', 'monthly')),
+      year INTEGER NOT NULL,
+      month INTEGER,
+      target_count INTEGER NOT NULL CHECK(target_count > 0),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(user_id, period_type, year, month)
+    )
+  `);
+
 }
 
 export { saveDatabase };

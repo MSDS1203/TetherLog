@@ -118,6 +118,10 @@ git clone https://github.com/ECU-Web-Development/group-project-group3.git
 cd backend
 npm install
 ```
+Create `backend/.env` with:
+```
+JWT_SECRET=dev-local-secret-change-me
+```
 #### Start frontend
 ```
 cd react-frontend

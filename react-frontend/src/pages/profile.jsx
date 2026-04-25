@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMe, apiRequest } from "../utils/api";
+import { getMe, apiRequest, getUserGoals, getUserShelves } from "../utils/api";
 import { useParams, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
@@ -17,6 +17,8 @@ export default function Profile() {
   const [currentlyReading, setCurrentlyReading] = useState([]);
   const [completed, setCompleted] = useState([]);
   const [activeTab, setActiveTab] = useState("activity");
+  const [shelves, setShelves] = useState([]);
+  const [goalSummary, setGoalSummary] = useState({ goals: [], streak: { current: 0, longest: 0 } });
 
   const [stats, setStats] = useState({
     followers: 0,
@@ -32,6 +34,8 @@ export default function Profile() {
       loadFollowStatus(id);
       loadStats(id);
       loadReadingLists(id);
+      loadShelves(id);
+      loadGoals(id);
     }
   }, [id]);
 
@@ -69,6 +73,29 @@ export default function Profile() {
     } catch (err) {
       console.error("Failed to load reading lists:", err);
     }
+  }
+
+  async function loadShelves(userId) {
+    try {
+      const data = await getUserShelves(userId);
+      setShelves(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to load shelves:", err);
+    }
+  }
+
+  async function loadGoals(userId) {
+    try {
+      const data = await getUserGoals(userId);
+      setGoalSummary(data);
+    } catch (err) {
+      console.error("Failed to load goals:", err);
+    }
+  }
+
+  function renderStars(rating) {
+    if (!rating) return null;
+    return `${"★".repeat(Number(rating))}${"☆".repeat(5 - Number(rating))}`;
   }
 
   async function toggleFollow() {
@@ -140,6 +167,25 @@ export default function Profile() {
         )}
       </div>
 
+      <div style={{ marginBottom: "20px", display: "grid", gap: "12px", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+        {goalSummary.goals.slice(0, 2).map((goal) => (
+          <div key={goal.id} style={{ border: "1px solid #dbe4ea", borderRadius: "10px", padding: "14px", background: "#fff" }}>
+            <div style={{ fontWeight: 600, marginBottom: "6px" }}>
+              {goal.period_type === "yearly" ? `${goal.year} Goal` : `${goal.month}/${goal.year} Goal`}
+            </div>
+            <div style={{ color: "#555" }}>{goal.progress} of {goal.target_count} books</div>
+            <div style={{ marginTop: "8px", height: "8px", borderRadius: "999px", background: "#edf2f7", overflow: "hidden" }}>
+              <div style={{ width: `${goal.percentComplete}%`, height: "100%", background: "#2b6cb0" }} />
+            </div>
+          </div>
+        ))}
+        <div style={{ border: "1px solid #dbe4ea", borderRadius: "10px", padding: "14px", background: "#fff" }}>
+          <div style={{ fontWeight: 600, marginBottom: "6px" }}>Reading Streak</div>
+          <div style={{ color: "#555" }}>Current: {goalSummary.streak.current} days</div>
+          <div style={{ color: "#555" }}>Longest: {goalSummary.streak.longest} days</div>
+        </div>
+      </div>
+
       <div className="tabs">
         <button
           onClick={() => setActiveTab("activity")}
@@ -164,6 +210,12 @@ export default function Profile() {
           className={`tab ${activeTab === "completed" ? "tab-active" : "tab-inactive"}`}
         >
           Completed <span className="tab-count">({completed.length})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("shelves")}
+          className={`tab ${activeTab === "shelves" ? "tab-active" : "tab-inactive"}`}
+        >
+          Shelves <span className="tab-count">({shelves.length})</span>
         </button>
       </div>
 
@@ -273,11 +325,52 @@ export default function Profile() {
                     <p className="book-author">{book.author}</p>
                     {book.rating && (
                       <p className="book-rating">
-                        Rating: {"*".repeat(book.rating)}
+                        Rating: {renderStars(book.rating)}
+                      </p>
+                    )}
+                    {book.review && (
+                      <p className="book-progress" style={{ marginTop: "6px" }}>
+                        {book.review}
                       </p>
                     )}
                   </div>
                 </Link>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === "shelves" && (
+          <div className="books-list" style={{ display: "grid", gap: "14px" }}>
+            {shelves.length === 0 ? (
+              <p className="empty-state">No shelves created yet.</p>
+            ) : (
+              shelves.map((shelf) => (
+                <div key={shelf.id} className="activity-item">
+                  <p className="activity-title">
+                    <b>{shelf.name}</b>
+                  </p>
+                  {shelf.description && <p className="activity-note">{shelf.description}</p>}
+                  {shelf.books.length === 0 ? (
+                    <p className="empty-state" style={{ marginTop: "10px" }}>No books on this shelf.</p>
+                  ) : (
+                    <div style={{ display: "grid", gap: "10px", marginTop: "10px" }}>
+                      {shelf.books.slice(0, 4).map((book) => (
+                        <Link to={`/books/${book.id}`} key={`${shelf.id}-${book.id}`} className="book-card">
+                          {book.cover_url ? (
+                            <img src={book.cover_url} alt={book.title} className="book-cover" />
+                          ) : (
+                            <div className="book-cover-placeholder">No cover</div>
+                          )}
+                          <div className="book-info">
+                            <div className="book-title">{book.title}</div>
+                            <p className="book-author">{book.author}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))
             )}
           </div>
