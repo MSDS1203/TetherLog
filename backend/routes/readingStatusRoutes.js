@@ -6,28 +6,53 @@ const router = express.Router();
 
 router.post("/", authMiddleware, async (req, res) => {
   const db = await getDb();
-  const { book_id, status } = req.body;
+  const { book_id, status, rating, review } = req.body;
 
   if (!book_id || !status) {
     return res.status(400).json({ error: "Missing fields" });
   }
 
+  if (rating && (Number(rating) < 1 || Number(rating) > 5)) {
+    return res.status(400).json({ error: "Rating must be between 1 and 5" });
+  }
+
   try {
     db.run(`
-      INSERT INTO reading_status (id, user_id, book_id, status, updated_at)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+      INSERT INTO reading_status (id, user_id, book_id, status, rating, review, started_at, completed_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?,
+        CASE WHEN ? = 'reading' THEN COALESCE((SELECT started_at FROM reading_status WHERE user_id = ? AND book_id = ?), DATE('now')) ELSE (SELECT started_at FROM reading_status WHERE user_id = ? AND book_id = ?) END,
+        CASE WHEN ? = 'completed' THEN DATE('now') ELSE NULL END,
+        CURRENT_TIMESTAMP)
       ON CONFLICT(user_id, book_id)
       DO UPDATE SET
         status = excluded.status,
+        rating = COALESCE(excluded.rating, reading_status.rating),
+        review = COALESCE(excluded.review, reading_status.review),
+        started_at = CASE
+          WHEN excluded.status = 'reading' THEN COALESCE(reading_status.started_at, DATE('now'))
+          ELSE reading_status.started_at
+        END,
+        completed_at = CASE
+          WHEN excluded.status = 'completed' THEN DATE('now')
+          WHEN excluded.status = 'reading' THEN reading_status.completed_at
+          ELSE NULL
+        END,
         updated_at = CURRENT_TIMESTAMP
     `, [
       generateId(),
       req.user.id,
       book_id,
+      status,
+      rating ? Number(rating) : null,
+      review?.trim() || null,
+      status,
+      req.user.id,
+      book_id,
+      req.user.id,
+      book_id,
       status
     ]);
-    console.log("BODY:", req.body);
-    console.log("USER:", req.user);
+
     saveDatabase();
     res.json({ message: "Saved" });
 
@@ -112,7 +137,7 @@ router.get("/:bookId", authMiddleware, async (req, res) => {
   const db = await getDb();
 
   const stmt = db.prepare(`
-    SELECT status FROM reading_status
+    SELECT status, rating, review, current_page, started_at, completed_at FROM reading_status
     WHERE user_id = ? AND book_id = ?
   `);
 
@@ -121,11 +146,51 @@ router.get("/:bookId", authMiddleware, async (req, res) => {
   if (stmt.step()) {
     const row = stmt.getAsObject();
     stmt.free();
-    return res.json({ status: row.status }); 
+    return res.json({
+      status: row.status,
+      rating: row.rating,
+      review: row.review,
+      current_page: row.current_page,
+      started_at: row.started_at,
+      completed_at: row.completed_at
+    });
   }
 
   stmt.free();
   res.json({ status: null }); 
+});
+
+router.get("/:bookId/reviews", async (req, res) => {
+  const db = await getDb();
+
+  try {
+    const stmt = db.prepare(`
+      SELECT
+        rs.user_id,
+        rs.rating,
+        rs.review,
+        rs.updated_at,
+        u.name AS user_name
+      FROM reading_status rs
+      JOIN users u ON rs.user_id = u.id
+      WHERE rs.book_id = ?
+        AND (rs.rating IS NOT NULL OR (rs.review IS NOT NULL AND TRIM(rs.review) != ''))
+      ORDER BY rs.updated_at DESC
+    `);
+
+    stmt.bind([req.params.bookId]);
+
+    const reviews = [];
+    while (stmt.step()) {
+      reviews.push(stmt.getAsObject());
+    }
+    stmt.free();
+
+    res.json(reviews);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load reviews" });
+  }
 });
 
 // Post a reading update
