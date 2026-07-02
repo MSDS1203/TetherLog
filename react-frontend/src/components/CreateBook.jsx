@@ -36,7 +36,7 @@ export default function CreateBook() {
         }),
       });
       
-      console.log("Server response:", res); // Add this line
+      console.log("Server response:", res); 
       
       if (res && res.id) {
         navigate(`/books/${res.id}`);

@@ -41,3 +41,62 @@ export function searchBooks(query) {
 export function getFeed() {
   return apiRequest("/api/feed");
 }
+
+export function getReadingStatus(bookId) {
+  return apiRequest(`/api/reading-status/${bookId}`);
+}
+
+export function saveReadingStatus(payload) {
+  return apiRequest("/api/reading-status", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function getBookReviews(bookId) {
+  return apiRequest(`/api/reading-status/${bookId}/reviews`);
+}
+
+export function getMyShelves(bookId) {
+  const query = bookId ? `?bookId=${encodeURIComponent(bookId)}` : "";
+  return apiRequest(`/api/shelves/my${query}`);
+}
+
+export function getUserShelves(userId) {
+  return apiRequest(`/api/shelves/user/${userId}`);
+}
+
+export function createShelf(payload) {
+  return apiRequest("/api/shelves", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function addBookToShelf(shelfId, bookId) {
+  return apiRequest(`/api/shelves/${shelfId}/books`, {
+    method: "POST",
+    body: JSON.stringify({ book_id: bookId })
+  });
+}
+
+export function removeBookFromShelf(shelfId, bookId) {
+  return apiRequest(`/api/shelves/${shelfId}/books/${bookId}`, {
+    method: "DELETE"
+  });
+}
+
+export function getMyGoals() {
+  return apiRequest("/api/goals/me");
+}
+
+export function getUserGoals(userId) {
+  return apiRequest(`/api/goals/user/${userId}`);
+}
+
+export function saveGoal(payload) {
+  return apiRequest("/api/goals", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}

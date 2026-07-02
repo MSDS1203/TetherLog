@@ -6,13 +6,17 @@ import { requireRole } from "../middleware/roleMiddleware.js";
 const router = express.Router();
 
 // create book
-router.post("/", authMiddleware, requireRole("author"), async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   const db = await getDb();
 
   const { title, author, cover_id, description, published_year, is_external } = req.body;
 
   if (!title || !author) {
     return res.status(400).json({ error: "Missing title or author" });
+  }
+
+  if (!is_external && req.user.role !== "author") {
+    return res.status(403).json({ error: "Authors only" });
   }
 
   const id = generateId();
