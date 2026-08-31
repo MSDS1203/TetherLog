@@ -84,6 +84,9 @@ It is important to note a reader can become an author through edit profile.
 - You can search books either locally (DB that auhtors add to) or through the external API.
 - Search users 
 
+## External Data Attribution
+Tetherlog uses the [Open Library API](https://openlibrary.org/developers/api) for external book search and metadata. Open Library is an initiative of the [Internet Archive](https://archive.org/).
+
 ## Database Schema
 There are five core tables: users, books, reading_status, reading_updates, and follows. They generally support book creation, and user interaction (follows or updates, etc.).
 ### Relationships
